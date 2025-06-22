@@ -5,67 +5,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Khorosenai</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    /* Ton style tweaké */
+    body { /* ... */ }
+    .pp { /* ... */ }
+    h1 { /* ... */ }
+    .text-block { /* ... */ }
 
-    body {
-      height: 100vh;
-      background: linear-gradient(135deg, #0d0d0d, #1a1a1a);
-      color: white;
-      font-family: 'Segoe UI', sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
+    .overwatch-section {
+      margin-top: 40px;
+      width: 90%; max-width: 600px;
+      background: #111;
+      border: 2px solid #0ff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 0 15px rgba(0,255,255,0.2);
+      opacity: 0;
+      animation: fadeIn 1.5s forwards 1s;
     }
-
-    .pp {
-      width: 160px;
-      height: 160px;
-      border-radius: 50%;
-      border: 3px solid #0ff;
-      box-shadow: 0 0 25px #0ff;
-      animation: pulse 2.5s infinite ease-in-out;
-      object-fit: cover;
-    }
-
-    @keyframes pulse {
-      0%, 100% {
-        box-shadow: 0 0 15px #0ff;
-      }
-      50% {
-        box-shadow: 0 0 30px #0ff;
-      }
-    }
-
-    h1 {
-      margin-top: 20px;
-      font-size: 3rem;
-      background: linear-gradient(90deg, #0ff, #f0f, #0ff);
-      background-size: 200% auto;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: glow 4s linear infinite;
+    .overwatch-section h2 {
       text-align: center;
+      margin-bottom: 15px;
+      color: #0ff; font-size: 1.4rem;
     }
-
-    @keyframes glow {
-      0% { background-position: 0% center; }
-      100% { background-position: 200% center; }
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #222;
     }
-
-    .text-block {
-      margin-top: 60px;
-      font-size: 1.5rem;
-      color: #aaa;
-      opacity: 0.7;
-      animation: fadeIn 2s ease-in-out 1s forwards;
-    }
-
+    .info-item span:first-child { color: #ccc; }
+    .info-item span:last-child { color: #0ff; font-weight: bold; }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
@@ -76,5 +45,38 @@
   <img src="photo.png" alt="PP Khorosenai" class="pp" />
   <h1>KHOROSENAI</h1>
   <div class="text-block">TEST</div>
+
+  <div class="overwatch-section" id="ow-section">
+    <h2>🕹️ Overwatch Profile</h2>
+    <div class="info">
+      <div class="info-item"><span>BattleTag</span><span id="bt">...</span></div>
+      <div class="info-item"><span>Rang</span><span id="rank">...</span></div>
+      <div class="info-item"><span>SR</span><span id="sr">...</span></div>
+      <div class="info-item"><span>Main</span><span id="main">...</span></div>
+    </div>
+  </div>
+
+  <script>
+    const BATTLETAG = 'Khorosenai-2443'; // remplace # par -
+    const ENDPOINT = `https://overfast-api.tekrop.fr/players/pc/${BATTLETAG}`;
+
+    fetch(ENDPOINT)
+      .then(res => res.json())
+      .then(d => {
+        document.getElementById('bt').textContent = d.nameTag;
+        if (d.ratings && d.ratings[0]) {
+          const tier = d.ratings[0].tier;
+          const sr = d.ratings[0].sr;
+          document.getElementById('rank').textContent = tier;
+          document.getElementById('sr').textContent = sr;
+        }
+        if (d.career && d.career.bestHeroes) {
+          const main = d.career.bestHeroes[0]?.hero || '—';
+          document.getElementById('main').textContent = main;
+        }
+        document.getElementById('ow-section').style.opacity = 1;
+      })
+      .catch(err => console.error('Erreur API OW:', err));
+  </script>
 </body>
 </html>

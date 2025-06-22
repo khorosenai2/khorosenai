@@ -2,39 +2,125 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Khorosenai</title>
   <style>
-    /* Ton style tweaké */
-    body { /* ... */ }
-    .pp { /* ... */ }
-    h1 { /* ... */ }
-    .text-block { /* ... */ }
+    /* Reset */
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+    }
 
+    body {
+      height: 100vh;
+      background: linear-gradient(135deg, #0d0d0d, #1a1a1a);
+      color: white;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 40px;
+      overflow-x: hidden;
+    }
+
+    /* PP avec effet pulse néon */
+    .pp {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 3px solid #0ff;
+      box-shadow: 0 0 20px #0ff;
+      animation: pulse 2.5s infinite ease-in-out;
+      object-fit: cover;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        box-shadow: 0 0 15px #0ff;
+      }
+      50% {
+        box-shadow: 0 0 30px #0ff;
+      }
+    }
+
+    /* Nom pseudo */
+    h1 {
+      margin-top: 16px;
+      font-size: 2rem;
+      background: linear-gradient(90deg, #0ff, #f0f, #0ff);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: glow 4s linear infinite;
+      text-align: center;
+      letter-spacing: 3px;
+    }
+
+    @keyframes glow {
+      0% { background-position: 0% center; }
+      100% { background-position: 200% center; }
+    }
+
+    /* Texte TEST */
+    .text-block {
+      margin-top: 20px;
+      font-size: 1.1rem;
+      color: #aaa;
+      opacity: 0.7;
+      animation: fadeIn 2s ease-in-out 1s forwards;
+      text-align: center;
+    }
+
+    /* Section Overwatch */
     .overwatch-section {
-      margin-top: 40px;
-      width: 90%; max-width: 600px;
+      margin-top: 50px;
+      width: 90%;
+      max-width: 700px;
       background: #111;
       border: 2px solid #0ff;
       border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 0 15px rgba(0,255,255,0.2);
+      padding: 25px 30px;
+      box-shadow: 0 0 25px rgba(0,255,255,0.3);
+      animation: fadeIn 2s ease-in-out 1.5s forwards;
       opacity: 0;
-      animation: fadeIn 1.5s forwards 1s;
     }
+
     .overwatch-section h2 {
       text-align: center;
-      margin-bottom: 15px;
-      color: #0ff; font-size: 1.4rem;
+      margin-bottom: 25px;
+      color: #0ff;
+      font-size: 1.6rem;
+      letter-spacing: 1.5px;
     }
+
+    .info {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      font-size: 1.1rem;
+      line-height: 1.5;
+      color: #ddd;
+    }
+
     .info-item {
       display: flex;
       justify-content: space-between;
-      padding: 8px 0;
       border-bottom: 1px solid #222;
+      padding-bottom: 8px;
     }
-    .info-item span:first-child { color: #ccc; }
-    .info-item span:last-child { color: #0ff; font-weight: bold; }
+
+    .info-item span:first-child {
+      color: #888;
+      font-weight: 600;
+      letter-spacing: 0.7px;
+      text-transform: uppercase;
+    }
+
+    .info-item span:last-child {
+      color: #0ff;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
@@ -46,37 +132,50 @@
   <h1>KHOROSENAI</h1>
   <div class="text-block">TEST</div>
 
-  <div class="overwatch-section" id="ow-section">
+  <section class="overwatch-section" id="ow-section">
     <h2>🕹️ Overwatch Profile</h2>
     <div class="info">
-      <div class="info-item"><span>BattleTag</span><span id="bt">...</span></div>
-      <div class="info-item"><span>Rang</span><span id="rank">...</span></div>
-      <div class="info-item"><span>SR</span><span id="sr">...</span></div>
-      <div class="info-item"><span>Main</span><span id="main">...</span></div>
+      <div class="info-item"><span>BattleTag</span><span id="bt">Chargement...</span></div>
+      <div class="info-item"><span>Rang</span><span id="rank">Chargement...</span></div>
+      <div class="info-item"><span>SR</span><span id="sr">Chargement...</span></div>
+      <div class="info-item"><span>Main</span><span id="main">Chargement...</span></div>
     </div>
-  </div>
+  </section>
 
   <script>
-    const BATTLETAG = 'Khorosenai-2443'; // remplace # par -
-    const ENDPOINT = `https://overfast-api.tekrop.fr/players/pc/${BATTLETAG}`;
+    const BATTLETAG = 'Khorosenai-2443'; // Remplace # par -
+    const API_URL = `https://overfast-api.tekrop.fr/players/pc/${BATTLETAG}`;
 
-    fetch(ENDPOINT)
-      .then(res => res.json())
-      .then(d => {
-        document.getElementById('bt').textContent = d.nameTag;
-        if (d.ratings && d.ratings[0]) {
-          const tier = d.ratings[0].tier;
-          const sr = d.ratings[0].sr;
-          document.getElementById('rank').textContent = tier;
-          document.getElementById('sr').textContent = sr;
+    fetch(API_URL)
+      .then(res => {
+        if (!res.ok) throw new Error('API OverFast indisponible');
+        return res.json();
+      })
+      .then(data => {
+        document.getElementById('bt').textContent = data.nameTag || 'N/A';
+        if(data.ratings && data.ratings.length) {
+          document.getElementById('rank').textContent = data.ratings[0].tier || 'N/A';
+          document.getElementById('sr').textContent = data.ratings[0].sr || 'N/A';
+        } else {
+          document.getElementById('rank').textContent = 'N/A';
+          document.getElementById('sr').textContent = 'N/A';
         }
-        if (d.career && d.career.bestHeroes) {
-          const main = d.career.bestHeroes[0]?.hero || '—';
-          document.getElementById('main').textContent = main;
+        if(data.career && data.career.bestHeroes && data.career.bestHeroes.length) {
+          document.getElementById('main').textContent = data.career.bestHeroes[0].hero || 'N/A';
+        } else {
+          document.getElementById('main').textContent = 'N/A';
         }
+        // Afficher la section après chargement
         document.getElementById('ow-section').style.opacity = 1;
       })
-      .catch(err => console.error('Erreur API OW:', err));
+      .catch(err => {
+        console.error('Erreur API OverFast:', err);
+        document.getElementById('bt').textContent = 'Erreur API';
+        document.getElementById('rank').textContent = '-';
+        document.getElementById('sr').textContent = '-';
+        document.getElementById('main').textContent = '-';
+        document.getElementById('ow-section').style.opacity = 1;
+      });
   </script>
 </body>
 </html>
